@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Message Board</title>
+<style>
+  :root{
+    --ink:#1a1a1a;
+    --orange:#d98a3d;
+    --green:#8fb989;
+    --green-text:#2f4a2b;
+    --amber:#f0c866;
+    --amber-text:#5a4715;
+    --paper:#ffffff;
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    padding:32px 16px 60px;
+    background:#fafafa;
+    font-family:"Segoe UI","Malgun Gothic",sans-serif;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    color:var(--ink);
+  }
+
+  /* ---------- Title ---------- */
+  .page-title{
+    width:100%;
+    max-width:400px;
+    text-align:center;
+    font-size:21px; /* 75% of 28px */
+    font-weight:700;
+    color:var(--ink);
+    margin:0;
+    white-space:nowrap;
+  }
+
+  .page-subtitle{
+    width:100%;
+    max-width:400px;
+    text-align:center;
+    font-size:12.6px; /* 75% of 16.8px */
+    font-weight:500;
+    color:#777;
+    margin:8px 0 0;
+    white-space:nowrap;
+  }
+
+  /* ---------- Board ---------- */
+  .board-wrap{
+    margin-top:22px;
+    width:100%;
+    max-width:400px;
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+  }
+
+  .board-shape-label{
+    font-size:13px;
+    font-weight:700;
+    color:#666;
+    text-align:center;
+  }
+
+  .board{
+    background:#000;
+    border:10px solid #fff;
+    display:grid;
+    gap:0;
+    border-radius:2px;
+    box-shadow: 0 0 0 1px #ddd;
+  }
+
+  .cell{
+    background:#000;
+    aspect-ratio:1 / 1;
+    border:1.5px solid #fff;
+    cursor:pointer;
+    transition: background .12s ease;
+  }
+
+  .cell:hover{
+    background:#333;
+  }
+
+  .cell.active{
+    background:#fff;
+  }
+
+  .cell.active:hover{
+    background:#eee;
+  }
+
+  .hint{
+    margin-top:14px;
+    font-size:13px;
+    color:#888;
+    text-align:center;
+  }
+
+  /* ---------- Output ---------- */
+  .output-section{
+    margin-top:26px;
+    width:100%;
+    max-width:400px;
+  }
+
+  .output-label{
+    font-size:15px;
+    font-weight:700;
+    margin-bottom:10px;
+  }
+
+  .output-sublabel{
+    display:block;
+    font-size:12.5px;
+    font-weight:500;
+    color:#888;
+    margin-top:3px;
+  }
+
+  .output-row{
+    display:flex;
+    gap:8px;
+    align-items:stretch;
+  }
+
+  .output-box{
+    flex:1;
+    min-height:70px;
+    padding:12px;
+    border:1.5px solid #ccc;
+    border-radius:6px;
+    font-family:"Consolas","Courier New",monospace;
+    font-size:14px;
+    line-height:1.5;
+    word-break:break-all;
+    resize:none;
+    background:#fff;
+    color:var(--ink);
+  }
+
+  .generate-btn{
+    flex-shrink:0;
+    padding:12px 14px;
+    border:none;
+    border-radius:6px;
+    background:var(--ink);
+    color:#fff;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    transition: opacity .12s ease;
+  }
+
+  .generate-btn:hover{
+    opacity:.85;
+  }
+
+  .copy-btn{
+    margin-top:10px;
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:6px;
+    background:var(--orange);
+    color:#fff;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    transition: opacity .12s ease;
+  }
+
+  .copy-btn:hover{
+    opacity:.9;
+  }
+
+  .copy-btn.copied{
+    background:#4a8c5f;
+  }
+
+  /* ---------- Leave confirm modal ---------- */
+  .modal-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.5);
+    align-items:center;
+    justify-content:center;
+    z-index:1000;
+    padding:20px;
+  }
+
+  .modal-overlay.show{
+    display:flex;
+  }
+
+  .modal-box{
+    background:#fff;
+    border-radius:10px;
+    padding:26px 22px;
+    max-width:320px;
+    width:100%;
+    text-align:center;
+    box-shadow:0 10px 30px rgba(0,0,0,0.25);
+  }
+
+  .modal-message{
+    font-size:16px;
+    font-weight:600;
+    color:var(--ink);
+    line-height:1.5;
+    margin:0 0 20px;
+  }
+
+  .modal-submessage{
+    display:none;
+    font-size:12.5px;
+    font-weight:500;
+    color:#888;
+    line-height:1.5;
+    margin:-12px 0 20px;
+  }
+
+  .modal-buttons{
+    display:flex;
+    gap:10px;
+  }
+
+  .modal-btn{
+    flex:1;
+    padding:11px 0;
+    border:none;
+    border-radius:6px;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    transition: opacity .12s ease;
+  }
+
+  .modal-btn:hover{
+    opacity:.85;
+  }
+
+  .modal-btn.confirm{
+    background:var(--orange);
+    color:#fff;
+  }
+
+  .modal-btn.cancel{
+    background:#e9e9e9;
+    color:var(--ink);
+  }
+</style>
+</head>
+<body>
+
+  <h1 class="page-title">0과 1로 전하는 우주의 메시지</h1>
+  <p class="page-subtitle">(컴퓨터 프로그래밍과 우주 개발의 발자취)</p>
+
+  <div class="output-section">
+    <div class="output-label">메시지 해독하기<span class="output-sublabel">(복사한 메시지를 아래에 붙여넣어 주세요)</span></div>
+    <div class="output-row">
+      <textarea class="output-box" id="outputBox" maxlength="500" placeholder="0과 1로 이루어진 메시지를 붙여넣으세요"></textarea>
+      <button class="generate-btn" id="generateBtn">해석하기</button>
+    </div>
+    <button class="copy-btn" id="copyBtn">메시지 지우기</button>
+  </div>
+
+  <div class="board-wrap" id="boardWrap"></div>
+
+  <div class="hint">칸을 클릭하면 흰색으로 켜지고, 다시 누르면 꺼집니다.</div>
+
+  <div class="modal-overlay" id="leaveModal">
+    <div class="modal-box">
+      <p class="modal-message">메세지 작성을 종료하고<br>나가시겠습니까?</p>
+      <div class="modal-buttons">
+        <button class="modal-btn cancel" id="leaveCancelBtn">취소</button>
+        <button class="modal-btn confirm" id="leaveConfirmBtn">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="msgModal">
+    <div class="modal-box">
+      <p class="modal-message" id="msgModalMain"></p>
+      <p class="modal-submessage" id="msgModalSub"></p>
+      <div class="modal-buttons">
+        <button class="modal-btn confirm" id="msgModalOkBtn" style="width:100%;">확인</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const boardWrap = document.getElementById('boardWrap');
+  const outputBox = document.getElementById('outputBox');
+  const copyBtn = document.getElementById('copyBtn');
+  const generateBtn = document.getElementById('generateBtn');
+
+  // 입력된 숫자 개수 -> 가능한 [가로, 세로] 모양 목록
+  const SHAPE_MAP = {
+    289: [[17, 17]],
+    221: [[13, 17], [17, 13]],
+    187: [[11, 17], [17, 11]],
+    169: [[13, 13]],
+    143: [[13, 11], [11, 13]],
+    121: [[11, 11]],
+    91:  [[13, 7], [7, 13]],
+    77:  [[11, 7], [7, 11]]
+  };
+
+  function createBoard(cols, rows, sequence){
+    const boardEl = document.createElement('div');
+    boardEl.className = 'board';
+    boardEl.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    boardEl.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+
+    const total = cols * rows;
+    for(let i = 0; i < total; i++){
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      if(sequence && sequence[i] === '0'){
+        cell.classList.add('active');
+      }
+      cell.addEventListener('click', () => {
+        cell.classList.toggle('active');
+      });
+      boardEl.appendChild(cell);
+    }
+    return boardEl;
+  }
+
+  function renderBoards(shapes, sequence){
+    boardWrap.innerHTML = '';
+    shapes.forEach(([cols, rows]) => {
+      if(shapes.length > 1){
+        const label = document.createElement('div');
+        label.className = 'board-shape-label';
+        label.textContent = `${cols} X ${rows}`;
+        boardWrap.appendChild(label);
+      }
+      boardWrap.appendChild(createBoard(cols, rows, sequence));
+    });
+  }
+
+  function decodeToBoard(){
+    const sequence = outputBox.value.replace(/[^01]/g, '');
+    const len = sequence.length;
+
+    if(len >= 290){
+      showMessageModal('메시지가 너무 깁니다');
+      return;
+    }
+
+    if(len <= 76){
+      showMessageModal('메시지가 너무 짧습니다.');
+      return;
+    }
+
+    const shapes = SHAPE_MAP[len];
+
+    if(!shapes){
+      showMessageModal('메시지를 해석할 수 없습니다.', '(소수x소수여야 합니다.)');
+      return;
+    }
+
+    renderBoards(shapes, sequence);
+  }
+
+  generateBtn.addEventListener('click', () => {
+    decodeToBoard();
+  });
+
+  copyBtn.addEventListener('click', () => {
+    outputBox.value = '';
+    outputBox.focus();
+  });
+
+  // 기본값: 13X13 (빈 보드)
+  renderBoards([[13, 13]], null);
+
+  // ---------- 안내 팝업 ----------
+  const msgModal = document.getElementById('msgModal');
+  const msgModalMain = document.getElementById('msgModalMain');
+  const msgModalSub = document.getElementById('msgModalSub');
+  const msgModalOkBtn = document.getElementById('msgModalOkBtn');
+
+  function showMessageModal(mainText, subText){
+    msgModalMain.textContent = mainText;
+    msgModalMain.style.marginBottom = subText ? '4px' : '20px';
+
+    if(subText){
+      msgModalSub.textContent = subText;
+      msgModalSub.style.display = 'block';
+    } else {
+      msgModalSub.textContent = '';
+      msgModalSub.style.display = 'none';
+    }
+
+    msgModal.classList.add('show');
+  }
+
+  msgModalOkBtn.addEventListener('click', () => {
+    msgModal.classList.remove('show');
+  });
+
+  // ---------- 뒤로가기 방지 팝업 ----------
+  const leaveModal = document.getElementById('leaveModal');
+  const leaveCancelBtn = document.getElementById('leaveCancelBtn');
+  const leaveConfirmBtn = document.getElementById('leaveConfirmBtn');
+  let leaveConfirmed = false;
+
+  history.pushState(null, '', location.href);
+
+  function handlePopState(){
+    if (leaveConfirmed) return;
+    history.pushState(null, '', location.href);
+    leaveModal.classList.add('show');
+  }
+
+  window.addEventListener('popstate', handlePopState);
+
+  leaveCancelBtn.addEventListener('click', () => {
+    leaveModal.classList.remove('show');
+  });
+
+  leaveConfirmBtn.addEventListener('click', () => {
+    leaveConfirmed = true;
+    leaveModal.classList.remove('show');
+    window.removeEventListener('popstate', handlePopState);
+    history.go(-2);
+  });
+</script>
+
+</body>
+</html>
