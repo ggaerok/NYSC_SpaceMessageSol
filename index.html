@@ -212,6 +212,29 @@
     max-width:400px;
   }
 
+  /* ---------- Footer ---------- */
+  .site-footer{
+    margin-top:40px;
+    width:100%;
+    max-width:400px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+  }
+
+  .site-footer img{
+    height:22px;
+    width:auto;
+    flex-shrink:0;
+  }
+
+  .footer-copyright{
+    font-size:11px;
+    color:#999;
+    line-height:1.4;
+  }
+
   /* ---------- Leave confirm modal ---------- */
   .modal-overlay{
     display:none;
@@ -308,6 +331,11 @@
     <a class="goto-btn" href="https://nysc-space-message.vercel.app/" target="_blank" rel="noopener noreferrer">메시지 만들기로 이동</a>
   </div>
 
+  <footer class="site-footer">
+    <img src="kywa_logo.png" alt="KYWA 국립청소년우주센터 로고">
+    <span class="footer-copyright">Copyright. 국립청소년우주센터(NYSC) All right reserved.</span>
+  </footer>
+
   <div class="modal-overlay" id="leaveModal">
     <div class="modal-box">
       <p class="modal-message">메세지 작성을 종료하고<br>나가시겠습니까?</p>
@@ -345,10 +373,6 @@
     91:  [[13, 7], [7, 13]],
     77:  [[11, 7], [7, 11]]
   };
-    <footer class="site-footer">
-    <img src="kywa_logo.png" alt="KYWA 국립청소년우주센터 로고">
-    <span class="footer-copyright">Copyright. 국립청소년우주센터(NYSC) All right reserved.</span>
-  </footer>
 
   function createBoard(cols, rows, sequence){
     const boardEl = document.createElement('div');
