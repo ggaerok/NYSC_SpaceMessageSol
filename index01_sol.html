@@ -115,6 +115,7 @@
     font-size:15px;
     font-weight:700;
     margin-bottom:10px;
+    line-height:1.5;
   }
 
   .output-sublabel{
@@ -183,6 +184,59 @@
 
   .copy-btn.copied{
     background:#4a8c5f;
+  }
+
+  .goto-btn{
+    display:block;
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:6px;
+    background:#3a6df0;
+    color:#fff;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    text-align:center;
+    text-decoration:none;
+    transition: opacity .12s ease;
+  }
+
+  .goto-btn:hover{
+    opacity:.9;
+  }
+
+  .bottom-link-wrap{
+    margin-top:26px;
+    width:100%;
+    max-width:400px;
+  }
+
+  /* ---------- Footer ---------- */
+  .site-footer{
+    margin-top:40px;
+    width:100vw;
+    margin-left:calc(50% - 50vw);
+    margin-right:calc(50% - 50vw);
+    box-sizing:border-box;
+    background:#000;
+    padding:14px 16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+  }
+
+  .site-footer img{
+    height:22px;
+    width:auto;
+    flex-shrink:0;
+  }
+
+  .footer-copyright{
+    font-size:11px;
+    color:#ccc;
+    line-height:1.4;
   }
 
   /* ---------- Leave confirm modal ---------- */
@@ -265,7 +319,7 @@
   <p class="page-subtitle">(컴퓨터 프로그래밍과 우주 개발의 발자취)</p>
 
   <div class="output-section">
-    <div class="output-label">메시지 해독하기<span class="output-sublabel">(복사한 메시지를 아래에 붙여넣어 주세요)</span></div>
+    <div class="output-label">1. 친구에게 받은 메시지를 해독해 볼까요?<br>2. 메시지를 아래에 붙여 넣고, 해석하기 버튼을 누르세요.</div>
     <div class="output-row">
       <textarea class="output-box" id="outputBox" maxlength="500" placeholder="0과 1로 이루어진 메시지를 붙여넣으세요"></textarea>
       <button class="generate-btn" id="generateBtn">해석하기</button>
@@ -276,6 +330,15 @@
   <div class="board-wrap" id="boardWrap"></div>
 
   <div class="hint">칸을 클릭하면 흰색으로 켜지고, 다시 누르면 꺼집니다.</div>
+
+  <div class="bottom-link-wrap">
+    <a class="goto-btn" href="https://nysc-space-message.vercel.app/" target="_blank" rel="noopener noreferrer">메시지 만들기로 이동</a>
+  </div>
+
+  <footer class="site-footer">
+    <img src="kywa_logo.png" alt="KYWA 국립청소년우주센터 로고">
+    <span class="footer-copyright">Copyright. 국립청소년우주센터(NYSC) All right reserved.</span>
+  </footer>
 
   <div class="modal-overlay" id="leaveModal">
     <div class="modal-box">
